@@ -1,5 +1,5 @@
 import React from "react"
-import { SafeAreaView, TextInput } from "react-native"
+import { SafeAreaView, TextInput, Text } from "react-native"
 
 export default function SearchDisplayWeather(){
     return (
