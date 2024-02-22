@@ -6,10 +6,12 @@ import { StatusBar } from 'expo-status-bar'
 import { NavigationContainer } from '@react-navigation/native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import SearchDisplayWeather from './src/screens/SearchDisplayWeather'
+import { useGetWeather } from './src/hooks/useGetWeather'
 
 const Tab = createMaterialTopTabNavigator()
 
 export default function App() {
+  const [error,weather] = useGetWeather()
   return (
     <NavigationContainer>
       <Tab.Navigator 
@@ -18,13 +20,14 @@ export default function App() {
         screenOptions={{
           // tabBarStyle:{height:100},
           tabBarLabelStyle:{fontSize:12,paddingTop:32},
-          tabBarActiveTintColor:'tomato',
-          tabBarInactiveTintColor:'grey',
+          tabBarActiveTintColor:'#2E95DE',
+          tabBarInactiveTintColor:'white',
+          tabBarStyle:{backgroundColor:'#AECEE5'},
           tabBarIndicatorStyle: { backgroundColor: 'transparent' }, // Hide
           swipeEnabled: true,
         }}
         >
-          <Tab.Screen name="Current" component={CurrentWeather} />
+          <Tab.Screen name="Current">{()=><CurrentWeather weatherData={weather}/>}</Tab.Screen>
           <Tab.Screen name="Saved" component={SavedLocations} />
           <Tab.Screen
             name="Search"

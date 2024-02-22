@@ -1,61 +1,91 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, ImageBackground } from 'react-native';
-import React from 'react';
-import { Icon } from '@rneui/themed';
+import { StatusBar } from 'expo-status-bar'
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  ImageBackground
+} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Icon } from '@rneui/themed'
 
-export default function CurrentWeather() {
+const weatherIcon = {
+  0:"sunny",
+  1:"weather-partly-cloudy",
+  2:"weather-cloudy",
+  3:"weather-cloudy"
+}
+
+export default function CurrentWeather({ weatherData }) {
+  console.log(weatherData)
+  const {
+    timezone ='',
+    elevation = 0,
+    current: {time = '', temperature_2m = 0, relative_humidity_2m = 0, precipitation = 0, weather_code = 0 } = {}
+  } = weatherData || {}
   return (
     <SafeAreaView style={styles.wrapper}>
-      <ImageBackground source={require('../../assets/man.jpg')} style={styles.image}>
+      <ImageBackground
+        source={require('../../assets/man.jpg')}
+        style={styles.image}
+      >
         <View style={styles.container}>
-          <Text style={styles.temp}>6</Text>
-          <Icon name='sunny' size={50}/>
-          <Text style={styles.feels}>Feels Like 5!</Text>
+          <Text style={styles.city}>{timezone}</Text>
+          <Text style={styles.temp}>{temperature_2m}°C</Text>
+          <Icon name={weatherIcon[weather_code]} type='material-community' size={50} color="#fff" />
+          <Text style={styles.feels}>{relative_humidity_2m}%</Text>
           <View style={styles.highLowWrapper}>
-            <Text style={styles.highLow}>High: 8</Text>
-            <Text style={styles.highLow}>Low: 6</Text>
+            <Text style={styles.time}>update: {time}</Text>
           </View>
           <View style={styles.bodyWrapper}>
-            <Text>Its sunny</Text>
-            <Text>Its perfect t-shirt weather</Text>
+            <Text style={styles.text}>powered by Julius</Text>
           </View>
         </View>
       </ImageBackground>
       <StatusBar style="auto" />
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    alignItems:'center'
+  container: {
+    flex: 1,
+    alignItems: 'center'
   },
-  wrapper:{
-    backgroundColor:'#fff',
-    flex:1,
+  wrapper: {
+    backgroundColor: '#fff',
+    flex: 1
   },
-  temp:{
-    color:'black',
-    fontSize:48
+  temp: {
+    color: 'white',
+    fontSize: 48
   },
-  feels:{
-    fontSize:30,
-    color:'black'
+  city: {
+    color: 'white',
+    fontSize: 28,
+    marginTop:40
   },
-  highLow:{
-    color:'black',
-    fontSize:20
+  feels: {
+    fontSize: 30,
+    color: 'white'
   },
-  highLowWrapper:{
-    flexDirection:'row',
-    gap:8
+  time: {
+    color: 'white',
+    fontSize: 20
   },
-  bodyWrapper:{
-    justifyContent:'flex-end',
-    alignItems:'flex-start'
+  highLowWrapper: {
+    flexDirection: 'row',
+    marginTop:400,
+    gap: 8
+  },
+  bodyWrapper: {
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start'
   },
   image: {
     flex: 1
+  },
+  text:{
+    color:'white'
   }
 })
