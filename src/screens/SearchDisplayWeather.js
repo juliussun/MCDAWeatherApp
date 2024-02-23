@@ -5,45 +5,63 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  FlatList
+  FlatList,
+  ImageBackground
 } from 'react-native'
 import { SearchBar } from 'react-native-elements'
 import { useGetCities } from '../hooks/useGetCities'
+import { useGetCityWeather } from '../hooks/useGetCityWeather'
+import { Button } from 'react-native-elements'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import { insertCityData } from '../components/db'
 
 export default function SearchDisplayWeather() {
   const [searchString, setSearchString] = useState('')
-  const {cities,error,loading} = useGetCities(searchString)
-//   const cities = [[{"admin1": "Beijing", "admin1_id": 2038349, "admin2": "Beijing", "admin2_id": 11876380, "country": "China", "country_code": "CN", "country_id": 1814991, "elevation": 49, "feature_code": "PPLC", "id": 1816670, "latitude": 39.9075, "longitude": 116.39723, "name": "Beijing", "population": 11716620, "timezone": "Asia/Shanghai"}, {"country": "China", "country_code": "CN", "country_id": 1814991, "elevation": 523, "feature_code": "PPL", "id": 1816671, "latitude": 35.20917, "longitude": 110.73278, "name": "Beijing", "timezone": "Asia/Shanghai"}, {"admin1": "Jiangxi", "admin1_id": 1806222, "admin2": "Jiujiang Shi", "admin2_id": 1805178, "country": "China", "country_code": "CN", "country_id": 1814991, "elevation": 19, "feature_code": "PPL", "id": 7636037, "latitude": 29.34644, "longitude": 116.19873, "name": "Beijing", "timezone": "Asia/Shanghai"}, {"admin1": "Guangdong", "admin1_id": 1809935, "admin2": "Shaoguan Shi", "admin2_id": 1795873, "country": "China", "country_code": "CN", "country_id": 1814991, "elevation": 119, "feature_code": "PPL", "id": 8212997, "latitude": 25.07655, "longitude": 114.26569, "name": "Beijing", "timezone": "Asia/Shanghai"}, {"admin1": "Chongqing", "admin1_id": 1814905, "admin2": "Chongqing", "admin2_id": 8739734, "country": "China", "country_code": "CN", "country_id": 1814991, "elevation": 583, "feature_code": "PPL", "id": 8404324, "latitude": 30.72608, "longitude": 108.67483, "name": "Beijing", "timezone": "Asia/Shanghai"}, {"admin1": "Hebei", "admin1_id": 1808773, "admin2": "Chengde Prefecture", "admin2_id": 2038085, "country": "China", "country_code": "CN", "country_id": 1814991, "elevation": 565, "feature_code": "PPL", "id": 9993452, "latitude": 41.26173, "longitude": 119.10803, "name": "Beijing", "timezone": "Asia/Shanghai"}, {"admin1": "Sichuan", "admin1_id": 1794299, "admin2": "Chengdu Shi", "admin2_id": 1815285, "country": "China", "country_code": "CN", "country_id": 1814991, "elevation": 587, "feature_code": "PPL", "id": 10196578, "latitude": 30.9699, "longitude": 103.94, "name": "Beijing", "timezone": "Asia/Shanghai"}], null]
+  const { cities, error, loading } = useGetCities(searchString)
+  const [city, setCity] = useState({ name: null, country: null, lat:null, lon:null })
+  const [err, cityweather] = useGetCityWeather(city)
+  const [show, setShow] = useState(false)
+  const [isPressed, setIsPressed] = useState(false);
 
-  console.log(cities)
-  console.log(searchString)
+  console.log(cityweather)
 
   const handleSearchInput = (text) => {
     setSearchString(text)
+    setShow(true)
   }
 
-  function City(props){
-    const {name,country,latitude,longitude} = props;
-    return (
-        <View style={styles.line}>
-            <Text style={styles.suggestions}>{name}</Text>
-            <Text style={styles.suggestions}>{country}</Text>
-            <Text style={styles.suggestions}>{latitude}</Text>
-            <Text style={styles.suggestions}>{longitude}</Text>
-        </View>
-    )
-}
+  const handlePress = () => {
+    console.log(city);
+    insertCityData(city.name, city.country, city.lat, city.lon);
+    setIsPressed(true);
+  };
 
-  const renderItem = ({item}) => (
-    // <TouchableOpacity onPress={() => console.log('City pressed', item.name)}>
-    //   <City name={item.name} />
-    // </TouchableOpacity>
-      <City 
-      name={item.name} 
-      country={item.country}
-      latitude={item.latitude}
-      longitude={item.longitude}
+  function City(props) {
+    const { name, country, latitude, longitude } = props
+    return (
+      <View style={styles.line}>
+        <Text style={styles.suggestions}>{name}</Text>
+        <Text style={styles.suggestions}>{country}</Text>
+        <Text style={styles.suggestions}>{latitude}</Text>
+        <Text style={styles.suggestions}>{longitude}</Text>
+      </View>
+    )
+  }
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => {
+        setCity({ name: item.name, country: item.country, lat:item.latitude, lon:item.longitude })
+        setShow(false)
+      }}
+    >
+      <City
+        name={item.name}
+        country={item.country}
+        latitude={item.latitude}
+        longitude={item.longitude}
       />
+    </TouchableOpacity>
   )
 
   return (
@@ -53,12 +71,38 @@ export default function SearchDisplayWeather() {
         onChangeText={handleSearchInput}
         style={styles.container}
         value={searchString}
+        containerStyle={styles.search}
+        lightTheme="true"
+        onClear={() => setShow(false)}
       />
-      {cities && searchString !== '' && (
-        <FlatList
-        data={cities}
-        renderItem={renderItem}
-        />
+      {cities && show && searchString !== '' && (
+        <FlatList data={cities} renderItem={renderItem} />
+      )}
+      {cityweather.current && searchString.length > 3 && (
+        <View style={styles.city}>
+          <Text style={styles.heading}>Previous Searched</Text>
+          <Text style={styles.timezone}>{cityweather.timezone}</Text>
+          <Text style={styles.temp}>
+            {cityweather.current.temperature_2m}°C
+          </Text>
+          <Text style={styles.temp}>
+            {cityweather.current.relative_humidity_2m}%
+          </Text>
+          <Text style={styles.temp}>updated at {cityweather.current.time}</Text>
+          <Button
+          onPress={handlePress}
+          disabled={isPressed}
+          buttonStyle={{
+            width:80,
+            marginTop:20
+          }}
+            icon={{
+              name: 'bookmark',
+              size: 25,
+              color: 'white',
+            }}
+          />
+        </View>
       )}
     </SafeAreaView>
   )
@@ -69,19 +113,41 @@ const styles = StyleSheet.create({
     margin: 10,
     color: 'white'
   },
+  search: {
+    color: 'white'
+  },
   text: {
     color: 'white'
   },
-  suggestions:{
-    color:"black"
+  suggestions: {
+    color: 'black'
   },
-  line:{
+  line: {
     flexDirection: 'row',
     gap: 20,
-    margin:2,
-    padding:18,
-    borderWidth:0.5,
-    borderColor: "#CBCED0",
-    justifyContent:"space-between"
+    margin: 2,
+    padding: 18,
+    borderWidth: 0.5,
+    borderColor: '#CBCED0',
+    justifyContent: 'space-between'
+  },
+  temp: {
+    color: '#F0F4B8',
+    fontSize: 20
+  },
+  city: {
+    padding: 35,
+    margin: 7,
+    height: 400,
+    backgroundColor: '#2EBB99',
+    borderRadius: 5,
+    gap: 15
+  },
+  timezone: {
+    fontSize: 30,
+    color: '#CDE9F7'
+  },
+  heading: {
+    color: '#D7F5FB'
   }
 })

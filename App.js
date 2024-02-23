@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, ImageBackground } from 'react-native'
 import CurrentWeather from './src/screens/CurrentWeather'
 import SavedLocations from './src/screens/SavedLocations'
@@ -7,11 +7,15 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import SearchDisplayWeather from './src/screens/SearchDisplayWeather'
 import { useGetWeather } from './src/hooks/useGetWeather'
+import { initDB } from './src/components/db'
 
 const Tab = createMaterialTopTabNavigator()
 
 export default function App() {
   const [error,weather] = useGetWeather()
+  useEffect(() => {
+    initDB();
+  }, []);
   return (
     <NavigationContainer>
       <Tab.Navigator 

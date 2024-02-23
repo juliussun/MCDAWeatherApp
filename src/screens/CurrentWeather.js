@@ -17,7 +17,7 @@ const weatherIcon = {
 }
 
 export default function CurrentWeather({ weatherData }) {
-  console.log(weatherData)
+  console.log("Show City Weather:",weatherData)
   const {
     timezone ='',
     elevation = 0,
