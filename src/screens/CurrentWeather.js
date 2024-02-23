@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react'
 import { Icon } from '@rneui/themed'
 
 const weatherIcon = {
-  0:"sunny",
+  0:"weather-sunny",
   1:"weather-partly-cloudy",
   2:"weather-cloudy",
   3:"weather-cloudy"

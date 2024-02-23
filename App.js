@@ -31,8 +31,7 @@ export default function App() {
           <Tab.Screen name="Saved" component={SavedLocations} />
           <Tab.Screen
             name="Search"
-            component={SearchDisplayWeather}
-          />
+          >{()=><SearchDisplayWeather />}</Tab.Screen>
       </Tab.Navigator>
     </NavigationContainer>
   )
