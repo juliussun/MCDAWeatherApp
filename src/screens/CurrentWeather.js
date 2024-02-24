@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Icon } from '@rneui/themed'
+import { wmocode } from '../components/const'
 
 const weatherIcon = {
   0:"weather-sunny",
@@ -23,16 +24,27 @@ export default function CurrentWeather({ weatherData }) {
     elevation = 0,
     current: {time = '', temperature_2m = 0, relative_humidity_2m = 0, precipitation = 0, weather_code = 0 } = {}
   } = weatherData || {}
+
+
+  const getDescription = (weather_code)=> wmocode[weather_code]?.day?.description?? ""
+  const getWeatherIcon = (weather_code)=> wmocode[weather_code]?.day?.image?? ""
+  const getBgImg = (weather_code)=> {
+    return wmocode[weather_code].bgImg.image || require('../../assets/man.jpg')
+  }
+
+  console.log((getBgImg(weather_code)));
+
   return (
     <SafeAreaView style={styles.wrapper}>
       <ImageBackground
-        source={require('../../assets/man.jpg')}
+        source={getBgImg(weather_code)}
         style={styles.image}
       >
         <View style={styles.container}>
           <Text style={styles.city}>{timezone}</Text>
           <Text style={styles.temp}>{temperature_2m}°C</Text>
-          <Icon name={weatherIcon[weather_code]} type='material-community' size={50} color="#fff" />
+          <Icon name={getWeatherIcon(weather_code)} type='material-community' size={80} color="#fff" />
+          <Text style={styles.code}>{getDescription(weather_code)}</Text>
           <Text style={styles.feels}>{relative_humidity_2m}%</Text>
           <View style={styles.highLowWrapper}>
             <Text style={styles.time}>update: {time}</Text>
@@ -54,16 +66,20 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     backgroundColor: '#fff',
-    flex: 1
+    flex: 1,
   },
   temp: {
     color: 'white',
-    fontSize: 48
+    fontSize: 58
   },
   city: {
     color: 'white',
     fontSize: 28,
-    marginTop:40
+    marginTop:50,
+    shadowColor:"black",
+    shadowOffset:{width:2,height:2},
+    shadowOpacity:1,
+    shadowRadius:3
   },
   feels: {
     fontSize: 30,
@@ -87,5 +103,9 @@ const styles = StyleSheet.create({
   },
   text:{
     color:'white'
+  },
+  code:{
+    fontSize:25,
+    color:"#EAEAD7"
   }
 })

@@ -22,6 +22,7 @@ export default function SearchDisplayWeather() {
   const [err, cityweather] = useGetCityWeather(city)
   const [show, setShow] = useState(false)
   const [isPressed, setIsPressed] = useState(false);
+  const [errormsg,setErrormsg] = useState(null)
 
   console.log(cityweather)
 
@@ -35,8 +36,10 @@ export default function SearchDisplayWeather() {
     try {
       await insertCityData1(city.name, city.country, city.lat, city.lon);
       setIsPressed(true);
+      setErrormsg(null)
     } catch (error) {
       setIsPressed(false)
+      setErrormsg(error)
       console.log("save city failed",error)
     }
   };
@@ -77,8 +80,9 @@ export default function SearchDisplayWeather() {
         style={styles.container}
         value={searchString}
         containerStyle={styles.search}
+        inputContainerStyle={styles.search}
         lightTheme="true"
-        onClear={() => {setShow(false);setIsPressed(false)}}
+        onClear={() => {setShow(false);setIsPressed(false);setErrormsg(null)}}
       />
       {cities && show && searchString !== '' && (
         <FlatList data={cities} renderItem={renderItem} />
@@ -109,17 +113,21 @@ export default function SearchDisplayWeather() {
           />
         </View>
       )}
+      {errormsg && <Text style={styles.msg}>{errormsg}</Text>}
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    margin: 10,
-    color: 'white'
+    margin: 2,
+    backgroundColor:"white",
+    color: '#3FD9AF',
+    height:50
   },
   search: {
-    color: 'white'
+    backgroundColor:"white",
+    color: '#3FD9AF',
   },
   text: {
     color: 'white'
@@ -132,8 +140,8 @@ const styles = StyleSheet.create({
     gap: 20,
     margin: 2,
     padding: 18,
-    borderWidth: 0.5,
-    borderColor: '#CBCED0',
+    borderWidth: 0.2,
+    borderColor: '#3FD9AF',
     justifyContent: 'space-between'
   },
   temp: {
@@ -154,5 +162,9 @@ const styles = StyleSheet.create({
   },
   heading: {
     color: '#D7F5FB'
+  },
+  msg:{
+    color: "red",
+    margin:20
   }
 })
