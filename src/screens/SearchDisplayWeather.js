@@ -14,6 +14,7 @@ import { useGetCityWeather } from '../hooks/useGetCityWeather'
 import { Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { insertCityData, insertCityData1 } from '../components/db'
+import { wmocode } from '../components/const'
 
 export default function SearchDisplayWeather() {
   const [searchString, setSearchString] = useState('')
@@ -34,7 +35,7 @@ export default function SearchDisplayWeather() {
   const handlePress = async () => {
     console.log(city);
     try {
-      await insertCityData1(city.name, city.country, city.lat, city.lon);
+      await insertCityData(city.name, city.country, city.lat, city.lon);
       setIsPressed(true);
       setErrormsg(null)
     } catch (error) {
@@ -43,6 +44,8 @@ export default function SearchDisplayWeather() {
       console.log("save city failed",error)
     }
   };
+
+  const getDescription = (weather_code)=> wmocode[weather_code]?.day?.description?? ""
 
   function City(props) {
     const { name, country, latitude, longitude } = props
@@ -93,6 +96,9 @@ export default function SearchDisplayWeather() {
           <Text style={styles.timezone}>{cityweather.timezone}</Text>
           <Text style={styles.temp}>
             {cityweather.current.temperature_2m}°C
+          </Text>
+          <Text style={styles.temp}>
+            {getDescription(cityweather.current.weather_code)}
           </Text>
           <Text style={styles.temp}>
             {cityweather.current.relative_humidity_2m}%

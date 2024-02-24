@@ -14,17 +14,6 @@ export const initDB = () => {
 }
 
 export const insertCityData = (name, country, latitude, longitude) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "INSERT INTO cities (name, country, latitude, longitude) VALUES (?, ?, ?, ?);",
-        [name, country, latitude, longitude],
-        () => console.log(`City data ${name},${country},${latitude},${longitude} inserted successfully`),
-        (_, error) => console.log('Insert error', error)
-      );
-    });
-}
-
-export const insertCityData1 = (name, country, latitude, longitude) => {
   return new Promise((resolve,reject)=>{
     db.transaction((tx) => {
       tx.executeSql(
