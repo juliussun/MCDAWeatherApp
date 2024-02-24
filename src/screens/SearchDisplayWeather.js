@@ -13,7 +13,7 @@ import { useGetCities } from '../hooks/useGetCities'
 import { useGetCityWeather } from '../hooks/useGetCityWeather'
 import { Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { insertCityData } from '../components/db'
+import { insertCityData, insertCityData1 } from '../components/db'
 
 export default function SearchDisplayWeather() {
   const [searchString, setSearchString] = useState('')
@@ -30,10 +30,15 @@ export default function SearchDisplayWeather() {
     setShow(true)
   }
 
-  const handlePress = () => {
+  const handlePress = async () => {
     console.log(city);
-    insertCityData(city.name, city.country, city.lat, city.lon);
-    setIsPressed(true);
+    try {
+      await insertCityData1(city.name, city.country, city.lat, city.lon);
+      setIsPressed(true);
+    } catch (error) {
+      setIsPressed(false)
+      console.log("save city failed",error)
+    }
   };
 
   function City(props) {
@@ -73,7 +78,7 @@ export default function SearchDisplayWeather() {
         value={searchString}
         containerStyle={styles.search}
         lightTheme="true"
-        onClear={() => setShow(false)}
+        onClear={() => {setShow(false);setIsPressed(false)}}
       />
       {cities && show && searchString !== '' && (
         <FlatList data={cities} renderItem={renderItem} />

@@ -24,9 +24,9 @@ export default function App() {
         screenOptions={{
           // tabBarStyle:{height:100},
           tabBarLabelStyle:{fontSize:12,paddingTop:32},
-          tabBarActiveTintColor:'#2E95DE',
+          tabBarActiveTintColor:'gold',
           tabBarInactiveTintColor:'white',
-          tabBarStyle:{backgroundColor:'#AECEE5'},
+          tabBarStyle:{backgroundColor:'#2EBB99'},
           tabBarIndicatorStyle: { backgroundColor: 'transparent' }, // Hide
           swipeEnabled: true,
         }}

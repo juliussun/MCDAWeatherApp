@@ -24,6 +24,35 @@ export const insertCityData = (name, country, latitude, longitude) => {
     });
 }
 
+export const insertCityData1 = (name, country, latitude, longitude) => {
+  return new Promise((resolve,reject)=>{
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT COUNT(id) as count FROM cities;",
+        [],
+        (_,{rows}) => {
+          const count = rows._array[0].count;
+          console.log("current city number is ", count)
+
+          if(count>=4){
+            reject("Can only save 4 cities, please delete one first!")
+          }else{
+            tx.executeSql(
+              "INSERT INTO cities (name, country, latitude, longitude) VALUES (?, ?, ?, ?);",
+              [name, country, latitude, longitude],
+              () => resolve(`City data ${name},${country},${latitude},${longitude} inserted successfully`),
+              (_, error) => reject('Insert error', error)
+            )
+          }
+        },
+        (_,error) => reject("'count fetch error", error.message)
+      );
+    });
+  })
+}
+
+
+
 export const fetchCities = async () => {
   return new Promise((resolve,reject)=>{
     db.transaction(tx=>{
